@@ -1,0 +1,85 @@
+// The database schema. Models arrive phase by phase: Url (02), User + Session (06), Click (07).
+// After changing this file: `pnpm --filter api db:migrate` (creates and applies a migration),
+// which also regenerates the client into src/generated/prisma.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UrlStatus {
+  active
+  disabled
+  deleted // soft delete: kept 30 days so the alias can't be re-claimed straight away
+
+  @@map("url_status")
+}
+
+model Url {
+  id            BigInt    @id // from the block allocator (services/idAllocator), not autoincrement
+  shortCode     String    @unique @map("short_code") @db.VarChar(32)
+  longUrl       String    @map("long_url") @db.VarChar(2048)
+  userId        String?   @map("user_id") @db.Uuid // null = anonymous
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clicks        Click[]
+  isCustomAlias Boolean   @default(false) @map("is_custom_alias")
+  status        UrlStatus @default(active)
+  expiresAt     DateTime? @map("expires_at") @db.Timestamptz(3) // null = never expires
+  purgeAt       DateTime? @map("purge_at") @db.Timestamptz(3) // expiresAt + 30 days; the purge job deletes after this
+  clickCount    BigInt    @default(0) @map("click_count") // maintained by the click worker (phase 7)
+  lastClickedAt DateTime? @map("last_clicked_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([userId, createdAt(sort: Desc)]) // the dashboard's "my links, newest first"
+  @@map("urls")
+}
+
+model User {
+  id           String    @id @default(uuid(7)) @db.Uuid // time-ordered UUIDs index well
+  email        String    @unique @db.VarChar(254) // stored lowercased by the service
+  passwordHash String    @map("password_hash")
+  name         String    @db.VarChar(100)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  sessions     Session[]
+  urls         Url[]
+
+  @@map("users")
+}
+
+model Session {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent   String?   @map("user_agent") @db.VarChar(512)
+  refreshJti  String    @map("refresh_jti") @db.Uuid // the only refresh token that may be used next
+  previousJti String?   @map("previous_jti") @db.Uuid // accepted for a few seconds after rotation (concurrent tabs)
+  rotatedAt   DateTime? @map("rotated_at") @db.Timestamptz(3)
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Click {
+  id           String   @id @db.Uuid // UUIDv7 from the producer: time-ordered, and the idempotency key
+  urlId        BigInt   @map("url_id")
+  url          Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  occurredAt   DateTime @map("occurred_at") @db.Timestamptz(3)
+  referrerHost String?  @map("referrer_host") @db.VarChar(255)
+  browser      String?  @db.VarChar(64)
+  os           String?  @db.VarChar(64)
+  device       String?  @db.VarChar(16) // desktop | mobile | tablet | tv
+  country      String?  @db.Char(2)
+  visitor      String   @db.Char(64) // HMAC of the IP with a daily key, hex: never the raw IP
+
+  @@index([urlId, occurredAt]) // every stats query: one link, a time range
+  @@map("clicks")
+}
