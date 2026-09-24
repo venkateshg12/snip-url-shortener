@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+.next
+dist
+coverage
+.turbo
+apps/api/src/generated
+packages/ui/theme-preview.html

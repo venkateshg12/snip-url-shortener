@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+
+# Env: commit only the examples
+.env
+.env.*
+!.env.example
+
+# Build outputs
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Tooling
+.turbo/
+coverage/
+
+# Logs
+*.log
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# AI agent files (local only: assistant instructions, skills, settings)
+.claude/
+.agents/
+.cursor/
+.codex/
+.gemini/
+.windsurf/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.cursorrules
+.windsurfrules
+
+# Planning and private documentation
+URL_SHORTENER_PLAN.md
+architect/
+tracking.md
+push_all_commits.sh
+
+
