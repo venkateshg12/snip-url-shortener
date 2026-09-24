@@ -1,0 +1,148 @@
+/*
+ * Design tokens: "serif analytics on warm paper".
+ * Plain CSS, no Tailwind: globals.css maps these into Tailwind utilities, and
+ * theme-preview.html loads this file directly. Change a colour here and both follow.
+ *
+ * Light is the source theme. Dark keeps the same rules: achromatic surfaces,
+ * one warm peach/sienna pair used sparingly, and shadows only on floating artifacts.
+ */
+
+:root {
+    color-scheme: light;
+
+    /* Palette: the raw brand values, used only by the semantic tokens below */
+    --ink-black: #17191c;
+    --paper-white: #ffffff;
+    --mist-gray: #f2f2f3;
+    --fog-white: #fafafb;
+    --slate-gray: #777b86;
+    --ash-gray: #979799;
+    --smoke-gray: #a3a6af;
+    --blush-peach: #fbe1d1;
+    --sienna-brown: #5d2a1a;
+
+    /* Surfaces: canvas → section band → card → floating artifact */
+    --background: var(--paper-white);
+    --foreground: var(--ink-black);
+    --section: var(--fog-white);
+    --card: var(--mist-gray);
+    --card-foreground: var(--ink-black);
+    --elevated: var(--paper-white);
+    --popover: var(--paper-white);
+    --popover-foreground: var(--ink-black);
+
+    /* Actions: the filled pill is ink, the ghost pill is an ink outline */
+    --primary: var(--ink-black);
+    --primary-foreground: var(--paper-white);
+    --secondary: var(--mist-gray);
+    --secondary-foreground: var(--ink-black);
+
+    /* Text tiers. Every text tier passes WCAG AA (4.5:1) on every surface above
+       (white, fog, mist). The reference greys (slate 4.2:1, ash 2.9:1, smoke 2.4:1)
+       fail as text, so they stay in the palette for non-text use only: chart series,
+       decorative rules. Hierarchy between tiers comes from size and weight too, not only grey. */
+    --muted: var(--mist-gray);
+    --muted-foreground: #595d67;
+    --subtle-foreground: #666a75;
+    --placeholder: #666a75;
+
+    /* shadcn's "accent" is the hover/focus surface of menu items and ghost buttons.
+       It stays neutral. The peach is "highlight", so it can't leak into every dropdown. */
+    --accent: var(--mist-gray);
+    --accent-foreground: var(--ink-black);
+    --highlight: var(--blush-peach);
+    --highlight-foreground: var(--sienna-brown);
+
+    /* Delete link, form errors. The only colour outside the peach family; it's functional. */
+    --destructive: #c4321f;
+    --destructive-foreground: var(--paper-white);
+
+    --border: #ececec;
+    --input: #ececec;
+    --ring: var(--ink-black);
+
+    /* Charts: sienna leads (clicks), ink second (unique visitors), then greys and a deep peach */
+    --chart-1: var(--sienna-brown);
+    --chart-2: var(--ink-black);
+    --chart-3: var(--slate-gray);
+    --chart-4: var(--smoke-gray);
+    --chart-5: #e2ab8c;
+
+    /* Elevation: only floating product artifacts, popovers and modals cast a shadow */
+    --elevation-popover: 0 0 0 1px rgb(0 0 0 / 0.05), 0 4px 24px 0 rgb(0 0 0 / 0.08);
+    --elevation-modal: 0 0 0 1px rgb(0 0 0 / 0.05), 0 8px 40px 0 rgb(0 0 0 / 0.1);
+    --elevation-artifact:
+        0 0 0 1px rgb(4 23 43 / 0.05), 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+    /* shadcn sidebar (dashboard shell) */
+    --sidebar: var(--fog-white);
+    --sidebar-foreground: var(--ink-black);
+    --sidebar-primary: var(--ink-black);
+    --sidebar-primary-foreground: var(--paper-white);
+    --sidebar-accent: var(--mist-gray);
+    --sidebar-accent-foreground: var(--ink-black);
+    --sidebar-border: #ececec;
+    --sidebar-ring: var(--ink-black);
+}
+
+/*
+ * Dark: ink becomes the room, paper becomes the ink.
+ * Surfaces step up in lightness as they rise (canvas < band < card < artifact),
+ * because shadows barely read on a dark canvas. The peach callout inverts to
+ * peach text on a deep sienna surface: the same pair, reversed.
+ */
+.dark {
+    color-scheme: dark;
+
+    --background: #111214;
+    --foreground: #f2f2f3;
+    --section: #151619;
+    --card: #1b1c20;
+    --card-foreground: #f2f2f3;
+    --elevated: #1f2125;
+    --popover: #1f2125;
+    --popover-foreground: #f2f2f3;
+
+    --primary: #f2f2f3;
+    --primary-foreground: #17191c;
+    --secondary: #1b1c20;
+    --secondary-foreground: #f2f2f3;
+
+    --muted: #1b1c20;
+    --muted-foreground: #9a9ea8;
+    --subtle-foreground: #8b8e97;
+    --placeholder: #8b8e97;
+
+    --accent: #26282d;
+    --accent-foreground: #f2f2f3;
+    --highlight: #3a2118;
+    --highlight-foreground: #fbe1d1;
+
+    /* Light fill + ink text, like the dark primary button: one red that passes AA as text and as a fill */
+    --destructive: #f07a67;
+    --destructive-foreground: #17191c;
+
+    --border: #2a2c31;
+    --input: #2e3035;
+    --ring: #f2f2f3;
+
+    --chart-1: #f2b899;
+    --chart-2: #f2f2f3;
+    --chart-3: #9a9ea8;
+    --chart-4: #5c5f67;
+    --chart-5: #a0573c;
+
+    --elevation-popover: 0 0 0 1px rgb(255 255 255 / 0.06), 0 4px 24px 0 rgb(0 0 0 / 0.4);
+    --elevation-modal: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 40px 0 rgb(0 0 0 / 0.5);
+    --elevation-artifact:
+        0 0 0 1px rgb(255 255 255 / 0.06), 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+
+    --sidebar: #151619;
+    --sidebar-foreground: #f2f2f3;
+    --sidebar-primary: #f2f2f3;
+    --sidebar-primary-foreground: #17191c;
+    --sidebar-accent: #26282d;
+    --sidebar-accent-foreground: #f2f2f3;
+    --sidebar-border: #2a2c31;
+    --sidebar-ring: #f2f2f3;
+}
