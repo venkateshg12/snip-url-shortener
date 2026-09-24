@@ -1,0 +1,38 @@
+/**
+ * Aliases nobody may claim: they're routes on the short domain or the web app, or they'd be
+ * confusing/abusable. Compared case-insensitively.
+ */
+export const RESERVED_CODES: ReadonlySet<string> = new Set([
+    "api",
+    "health",
+    "metrics",
+    "admin",
+    "login",
+    "logout",
+    "register",
+    "signup",
+    "signin",
+    "dashboard",
+    "settings",
+    "account",
+    "expired",
+    "not-found",
+    "static",
+    "_next",
+    "assets",
+    "robots",
+    "sitemap",
+    "favicon",
+    "www",
+    "app",
+    "help",
+    "support",
+    "docs",
+    "about",
+    "terms",
+    "privacy",
+    "security",
+    "status",
+    "billing",
+    "pricing",
+]);
