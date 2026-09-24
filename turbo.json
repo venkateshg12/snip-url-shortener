@@ -1,0 +1,53 @@
+{
+    "$schema": "https://turborepo.dev/schema.json",
+    "ui": "tui",
+    "globalEnv": ["NODE_ENV"],
+    "globalPassThroughEnv": [
+        "PORT",
+        "LOG_LEVEL",
+        "DATABASE_URL",
+        "DATABASE_URL_TEST",
+        "DB_POOL_MAX",
+        "CORS_ORIGINS",
+        "TRUSTED_PROXIES",
+        "REDIS_QUEUE_URL",
+        "REDIS_CACHE_URL",
+        "SHORTCODE_KEYS",
+        "SHORT_BASE_URL",
+        "WEB_URL",
+        "CACHE_ENABLED",
+        "CACHE_COMMAND_TIMEOUT_MS",
+        "JWT_SECRET",
+        "JWT_REFRESH_SECRET",
+        "BCRYPT_ROUNDS",
+        "COOKIE_DOMAIN",
+        "VISITOR_HASH_SECRET",
+        "BULL_BOARD_USER",
+        "BULL_BOARD_PASSWORD"
+    ],
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build", "db:generate"],
+            "inputs": ["$TURBO_DEFAULT$", ".env*"],
+            "outputs": ["dist/**", ".next/**", "!.next/cache/**", "!.next/dev/**"]
+        },
+        "lint": {
+            "dependsOn": ["^lint"]
+        },
+        "typecheck": {
+            "dependsOn": ["^typecheck", "db:generate"]
+        },
+        "test": {
+            "dependsOn": ["^test", "db:generate"]
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true,
+            "dependsOn": ["db:generate"]
+        },
+        "db:generate": {
+            "inputs": ["prisma/**", "prisma.config.ts"],
+            "outputs": ["src/generated/**"]
+        }
+    }
+}

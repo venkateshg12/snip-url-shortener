@@ -1,0 +1,49 @@
+# Local infrastructure. `docker compose up -d`, then `pnpm dev`.
+name: url-shortener
+
+services:
+  postgres:
+    image: postgres:18
+    # 5433 on the host: a native Postgres often already owns 5432
+    ports: ["5433:5432"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: url_shortener
+    volumes:
+      # Postgres 18 images keep data under /var/lib/postgresql/<major>, so mount the parent
+      - postgres_data:/var/lib/postgresql
+      # Runs once, on an empty volume: creates url_shortener_test for the integration tests
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d url_shortener"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # BullMQ jobs + rate-limit counters. Must never evict: evicting a job loses it.
+  redis-queue:
+    image: redis:7
+    ports: ["6379:6379"]
+    volumes: [redis_queue_data:/data]
+    command: redis-server --appendonly yes --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # URL cache. Must evict to stay bounded. No persistence: an empty cache after a restart is correct.
+  redis-cache:
+    image: redis:7
+    ports: ["6380:6379"]
+    command: redis-server --save "" --appendonly no --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data: {}
+  redis_queue_data: {}

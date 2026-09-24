@@ -1,0 +1,20 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# pnpm 11 runs no dependency install scripts unless they're listed here (true = run, false = skip).
+allowBuilds:
+  "@prisma/engines": true # fetches the schema-engine binary that `prisma migrate` uses
+  prisma: true
+  bcrypt: true # picks its prebuilt native binary (node-gyp-build)
+  esbuild: true # tsx's compiler; the script verifies the platform binary
+  msgpackr-extract: false # optional native speed-up for BullMQ's serializer; falls back to JS
+  sharp: false # ships prebuilt binaries
+  unrs-resolver: false
+
+# Slow connections: large registry documents (e.g. prisma's, ~40 MB) exceed the 60s default.
+# Set here, not with --config.fetch-timeout: pnpm 11 passes the CLI value as a string and crashes.
+fetchTimeout: 300000
+fetchRetries: 5
+minimumReleaseAgeExclude:
+  - lucide-react@1.48.0
