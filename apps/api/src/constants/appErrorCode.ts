@@ -1,0 +1,21 @@
+/** Machine-readable error codes in the envelope's `errors[].code`. The web app maps them to copy. */
+export enum AppErrorCode {
+    ValidationError = "VALIDATION_ERROR",
+    InvalidJson = "INVALID_JSON",
+    PayloadTooLarge = "PAYLOAD_TOO_LARGE",
+    NotFound = "NOT_FOUND",
+    RouteNotFound = "ROUTE_NOT_FOUND",
+    Duplicate = "DUPLICATE",
+    AppError = "APP_ERROR",
+    InternalServerError = "INTERNAL_SERVER_ERROR",
+    InvalidTarget = "INVALID_TARGET",
+    LoginRequired = "LOGIN_REQUIRED",
+    ReservedAlias = "RESERVED_ALIAS",
+    AliasTaken = "ALIAS_TAKEN",
+    CodeGenerationFailed = "CODE_GENERATION_FAILED",
+    TooManyRequests = "TOO_MANY_REQUESTS",
+    InvalidAccessToken = "INVALID_ACCESS_TOKEN",
+    InvalidRefreshToken = "INVALID_REFRESH_TOKEN",
+    InvalidCredentials = "INVALID_CREDENTIALS",
+    EmailTaken = "EMAIL_TAKEN",
+}
